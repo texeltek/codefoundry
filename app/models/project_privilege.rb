@@ -10,10 +10,11 @@ class ProjectPrivilege < ActiveRecord::Base
 
   def self.model_name
     name = "privilege"
-    name.instance_eval do
+    name.instance_eval do 
       def plural;   pluralize;   end
       def singular; singularize; end
       def human;    singularize; end # only for Rails 3
+      def i18n_key; singularize; end
     end
     return name
   end

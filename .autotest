@@ -1,0 +1,6 @@
+Autotest.add_hook :initialize do |at|
+  %w{.git config db log public script tmp vendor}.each do |exception|
+    at.add_exception(exception)
+  end
+end
+

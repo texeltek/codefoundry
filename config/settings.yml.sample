@@ -1,14 +1,33 @@
-development:
-  svn_prefix: /svn
+defaults: 
+  repository_base_path: /var/codefoundry
+  repository_archive_path: /var/codefoundry/archive
   svn_app_config:
-    host: dev
-    # port: 80
-    path_prefix: /svn
-  git_prefix: /git
+    host: localhost
+    port: 8001
   git_app_config:
-    project_root: /home/blue/tmp/git
     git_path: /usr/bin/git
+  marker:
+    link_base: /
 
-production:
+development:
+  repository_base_path: /var/codefoundry
+  repository_archive_path: /var/codefoundry/archive
+  svn_app_config:
+    host: localhost
+    port: 8001
+  git_app_config:
+    git_path: /usr/bin/git
+  marker:
+    link_base: /
 
 test:
+  repository_base_path: /var/codefoundry
+  repository_archive_path: /var/codefoundry/archive
+  svn_app_config:
+    host: localhost
+    port: 8001
+  git_app_config:
+    git_path: /usr/bin/git
+  marker:
+    link_base: /
+
