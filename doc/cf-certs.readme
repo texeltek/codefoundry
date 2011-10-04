@@ -201,4 +201,38 @@ Write out database with 1 new entries
 Data Base Updated
 
 
+----- Set up the Client Certificate with git -----
+
+git config --global http.sslCert /absolute/path/to/client/cert.pem
+git config --global http.sslKey /absolute/path/to/client/key.pem
+
+----- OPTIONAL: turn off git's SSL verification -----
+export GIT_SSL_NO_VERIFY=true
+-- this is optional because we will want to test that
+-- SSL verification works during pre-prod testing
+
+----- MAC OS X: create a PKCS12 certificate and add it to your local certificate storage -----
+openssl pkcs12 -export -in <YOUR_CERT_FILE>.cert.pem -inkey <YOUR_KEY_FILE>.key.pem -out <WHATEVER_FILENAME_YOU_WANT>.p12
+
+Open Keychain
+Click on 'System' on the left-hand side
+Click on File -> Import Items...
+Select the .p12 file you created
+Type in your administrator password for your machine
+Type in the certificate password you just created
+Should be_ok
+
+----- Configure CodeFoundry's Apache to use the server cert and cfdev CA cert -----
+copy the server cert, server key and CA cert files to a directory that
+apache can access on the server
+
+in /etc/apache2/sites-enabled/codefoundry.conf
+SSLEngine on
+SSLVerifyClient optional
+SSLCertificateFile /etc/apache2/ssl/localhost.cert.pem
+SSLCertificateKeyFile /etc/apache2/ssl/localhost.key.pem
+SSLOptions +StdEnvVars +FakeBasicAuth
+SSLCertificateChainFile /etc/apache2/ssl/cfdev-ca-cert.pem
+SSLCACertificateFile /etc/apache2/ssl/cfdev-ca-cert.pem
+
 
