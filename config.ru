@@ -2,10 +2,11 @@
 
 require ::File.expand_path('../config/environment',  __FILE__)
 
-#require 'git_handler'
+require 'git_handler'
 #require 'svn_handler'
 
-#use GitHandler
+use GitHandler
 #use SvnHandler
+
 
 run Codefoundry::Application
