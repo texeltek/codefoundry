@@ -1,0 +1,204 @@
+----- Setup -----
+mkdir /home/ca /home/ca/private /home/ca/certs /home/ca/conf
+
+cd /home/ca
+
+echo '01' > serial
+
+touch index.txt
+
+----- Create a Certificate Authority (CA) Configuration -----
+vim conf/caconfig.cnf
+# Insert into the above file:
+#..................................
+[ ca ]
+default_ca = cfdev
+[ cfdev ]
+dir = /home/vagrant/ssl/ca
+serial = $dir/serial
+database = $dir/index.txt
+new_certs_dir = $dir/certs
+certificate = $dir/certs/cfdev-ca-cert.pem
+private_key = $dir/private/cfdev-ca-key.pem
+default_days = 3650
+default_md = md5
+preserve = no
+email_in_dn = no
+nameopt = default_ca
+certopt = default_ca
+policy = policy_match
+[ policy_match ]
+countryName = match
+stateOrProvinceName = supplied
+organizationName = supplied
+organizationalUnitName = optional
+commonName = optional
+emailAddress = optional
+[ req ]
+default_bits = 1024 # Size of keys
+default_keyfile = key.pem # name of generated keys
+default_md = md5 # message digest algorithm
+string_mask = nombstr # permitted characters
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+[ req_distinguished_name ]
+# Variable name Prompt string
+#------------------------- ----------------------------------
+0.organizationName = Organization Name (your company name, MUST BE SUPPLIED but does not have to match dev CA's organizationName, spaces and punctuation are OK)
+organizationalUnitName = Organizational Unit Name (department division, OPTIONAL, spaces and punctuation are OK)
+emailAddress = Email Address (OPTIONAL)
+emailAddress_max = 80
+localityName = Locality Name (city, district, spaces and punctuation are OK)
+stateOrProvinceName = State or Province Name (full name, MUST BE SUPPLIED but does not have to match dev CA's stateOrProvinceName)
+countryName = Country Name (2 letter code -- REQUIRED -- dev cert countryName must match dev CA countryName)
+countryName_min = 2
+countryName_max = 2
+commonName = Common Name (hostname, IP, or your name -- NOTE: if this is a server cert, it MUST match the IP of the host machine)
+commonName_max = 64
+# Default values for the above, for consistency and less typing.
+# Variable name Value
+#------------------------ ------------------------------
+0.organizationName_default = cf
+organizationalUnitName_Default = dev
+localityName_default = Ft. Meade
+stateOrProvinceName_default = Maryland
+countryName_default = US
+emailAddress_default = dev@cfdev.com
+[ v3_ca ]
+basicConstraints = CA:TRUE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+[ v3_req ]
+basicConstraints = CA:FALSE
+subjectKeyIdentifier = hash
+
+
+----- Generating the CA Key and Certificate -----
+cd ca
+openssl req -new -x509 -extensions v3_ca -keyout private/cfdev-ca-key.pem -out cfdev-ca-cert.pem -days 365 -config conf/caconfig.cnf
+
+Generating a 1024 bit RSA private key
+.....................++++++
+.....................................................++++++
+writing new private key to 'private/cfdev-ca-key.pem'
+Enter PEM pass phrase: cfdev
+Verifying - Enter PEM pass phrase: cfdev
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Organization Name (your company name, MUST BE SUPPLIED but does not have to match dev CAs organizationName, spaces and punctuation are OK) [cf]:
+Organizational Unit Name (department division, OPTIONAL, spaces and punctuation are OK) []:dev
+Email Address (OPTIONAL) [dev@codefoundry.com]:cfdev-ca@cfdev.com
+Locality Name (city, district, spaces and punctuation are OK) [Ft. Meade]:
+State or Province Name (full name, MUST BE SUPPLIED but does not have to match dev CAs stateOrProvinceName) [Maryland]:
+Country Name (2 letter code -- REQUIRED -- dev cert countryName must match dev CA countryName) [US]:
+Common Name (hostname, IP, or your name -- NOTE: if this is a server cert, it MUST match the IP of the host machine) []:cfdev
+
+
+----- Creating the Server Certificate -----
+Create a certificate request
+openssl req -new -nodes -out localhost.req.pem -keyout private/localhost.key.pem -config conf/caconfig.cnf
+
+Generating a 1024 bit RSA private key
+......++++++
+..............++++++
+writing new private key to 'private/localhost.key.pem'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Organization Name (your company name, MUST BE SUPPLIED but does not have to match dev CAs organizationName, spaces and punctuation are OK) [cf]:
+Organizational Unit Name (department division, OPTIONAL, spaces and punctuation are OK) []:dev
+Email Address (OPTIONAL) [dev@cfdev.com]:cfdev-localhost@cfdev.com
+Locality Name (city, district, spaces and punctuation are OK) [Ft. Meade]:
+State or Province Name (full name, MUST BE SUPPLIED but does not have to match dev CAs stateOrProvinceName) [Maryland]:
+Country Name (2 letter code -- REQUIRED -- dev cert countryName must match dev CA countryName) [US]:
+Common Name (hostname, IP, or your name -- NOTE: if this is a server cert, it MUST match the IP of the host machine) []:localhost
+
+
+
+Sign the request using the CA you created before
+openssl ca -out certs/localhost.cert.pem -config conf/caconfig.cnf -infiles localhost.req.pem
+
+Using configuration from conf/caconfig.cnf
+Enter pass phrase for /home/vagrant/ssl/ca/private/cfdev-ca-key.pem: cfdev
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+organizationName      :PRINTABLE:'cf'
+organizationalUnitName:PRINTABLE:'dev'
+localityName          :PRINTABLE:'Ft. Meade'
+stateOrProvinceName   :PRINTABLE:'Maryland'
+countryName           :PRINTABLE:'US'
+commonName            :PRINTABLE:'localhost'
+Certificate is to be certified until Oct  1 18:50:58 2021 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+
+
+
+
+----- Create Client Certificate -----
+
+openssl req -new -nodes -out <YOUR_GIT_USERNAME_FOR_DEV_TESTING>.req.pem -keyout private/<YOUR_GIT_USERNAME_FOR_DEV_TESTING>.key.pem -days 3650 -config conf/caconfig.cnf
+
+Generating a 1024 bit RSA private key
+....................++++++
+..................++++++
+writing new private key to 'private/acurry.key.pem'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Organization Name (your company name, MUST BE SUPPLIED but does not have to match dev CAs organizationName, spaces and punctuation are OK) [cf]:
+Organizational Unit Name (department division, OPTIONAL, spaces and punctuation are OK) []:dev
+Email Address (OPTIONAL) [dev@cfdev.com]:acurry@texeltek.com
+Locality Name (city, district, spaces and punctuation are OK) [Ft. Meade]:
+State or Province Name (full name, MUST BE SUPPLIED but does not have to match dev CAs stateOrProvinceName) [Maryland]:
+Country Name (2 letter code -- REQUIRED -- dev cert countryName must match dev CA countryName) [US]:
+Common Name (hostname, IP, or your name -- NOTE: if this is a server cert, it MUST match the IP of the host machine) []:acurry
+
+
+
+Sign the client cert with cfdev-ca
+
+openssl ca -out certs/<YOUR_GIT_USERNAME_FOR_DEV_TESTING>.cert.pem -days 3650 -config conf/caconfig.cnf -infiles <YOUR_GIT_USERNAME_FOR_DEV_TESTING>.req.pem
+
+Using configuration from conf/caconfig.cnf
+Enter pass phrase for /home/vagrant/ssl/ca/private/cfdev-ca-key.pem:
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+organizationName      :PRINTABLE:'cf'
+organizationalUnitName:PRINTABLE:'dev'
+localityName          :PRINTABLE:'Ft. Meade'
+stateOrProvinceName   :PRINTABLE:'Maryland'
+countryName           :PRINTABLE:'US'
+commonName            :PRINTABLE:'acurry'
+Certificate is to be certified until Oct  1 18:55:37 2021 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+
+
+
