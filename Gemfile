@@ -38,7 +38,7 @@ gem 'marker'
 gem 'authlogic'
 
 # pagination
-gem 'will_paginate'
+gem 'will_paginate', '>= 3.0'
 
 # image processing
 gem 'paperclip'
