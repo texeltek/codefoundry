@@ -1,5 +1,6 @@
 class GitHandler
   MATCH_RE = Regexp.new('^/projects/(\\w+)/repositories/(\\w+)\.git(/.*)')
+  GIT_SHORTCUT_RE = Regexp.new('/git/(\\w+)/(\\w+)\.git(/.*)')
 
   def initialize( app )
     @logger = ActiveRecord::Base.logger
@@ -20,7 +21,7 @@ class GitHandler
   def call( env )
     # if the request is for a git repository (name.git), then send the request to
     # the git handler
-    if m = MATCH_RE.match( env['PATH_INFO'] )
+    if m = MATCH_RE.match( env['PATH_INFO'] ) || m = GIT_SHORTCUT_RE.match( env['PATH_INFO'] )
       # remove the prefix
       env['PATH_INFO'] = "/git/#{m[1]}/#{m[2]}.git#{m[3]}"
       @git_provider.call( env )
