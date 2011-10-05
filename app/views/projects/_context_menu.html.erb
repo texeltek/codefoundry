@@ -2,6 +2,7 @@
 <h4>Navigation</h4>
 <ul>
     <li><%= link_to 'Project Information', project_path(@project) %></li>
+    <li><%= link_to 'Edit Project', edit_project_path(@project) %></li>
     <li><%= link_to 'Repositories', project_repositories_path(@project) %></li>
 </ul>
 <% end %>
