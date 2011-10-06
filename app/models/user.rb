@@ -4,6 +4,8 @@ class User < ActiveRecord::Base
   has_many :projects, :through => :project_privileges
   acts_as_authentic
   
+  validates_uniqueness_of :x509_dn
+  
   default_scope order(:username)
   scope :by_param_scope, lambda { |username| where(:username => username) }
 
