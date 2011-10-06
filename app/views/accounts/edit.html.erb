@@ -32,6 +32,11 @@
     <%= f.label :time_zone %><br/>
     <%= f.time_zone_select :time_zone, ActiveSupport::TimeZone.us_zones %>
   </p>
+  
+  <p>
+    <%= f.label :x509_dn, "Your x509 Distinguished Name (DN)" %><br/>
+    <%= f.text_field :x509_dn %>
+  </p>
 
   <div class="actions">
     <%= f.submit 'Update' %>

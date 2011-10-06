@@ -48,4 +48,9 @@ class Project < ActiveRecord::Base
   def editor?(arg)
     privileges.joins(:role).where(:user_id => arg).where(:roles => { :edit_project => true }).first ? true : false
   end
+  
+  # is user a committer (has commit and checkout privileges)?
+  def committer? arg
+    privileges.joins( :role ).where( :user_id => arg ).where( :roles => { :commit => true }).first ? true : false
+  end
 end
