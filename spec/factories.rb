@@ -49,28 +49,30 @@ FactoryGirl.define do
 
   factory :role do
     name 'user'
+    edit_project false
+    add_others false
+    create_delete_repositories false
+    commit false
+    checkout false
 
-    factory :admin_role do
+    factory :administrator do
       edit_project true
       add_others true
       create_delete_repositories true
       commit true
       checkout true
     end
-
-    factory :read_only_role do
-      edit_project false
-      add_others false
-      create_delete_repositories false
-      commit false
+    
+    factory :committer do
+      commit true
       checkout true
     end
-
-    factory :editor do
-      edit_project true
-      add_others false
-      create_delete_repositories false
-      commit false
+    
+    factory :reviewer do
+      checkout true
+    end
+    
+    factory :tester do
       checkout true
     end
   end

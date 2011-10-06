@@ -24,6 +24,14 @@ module MockHelpers
   def mock_account( stubs={} )
     mock_user( stubs )
   end
+  
+  def mock_repository( stubs={} )
+    mock_model( Repository, stubs ).as_null_object
+  end
+  
+  def mock_privilege( stubs={} )
+    mock_model( ProjectPrivilege, stubs ).as_null_object
+  end
 end
 
 module AuthlogicHelpers

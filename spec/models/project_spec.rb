@@ -74,117 +74,137 @@ describe Project do
     end
   end
 
-  describe "#add_administrator" do
-    before :each do
-      @proj = FactoryGirl.create(:project)
-    end
-    
-    it "should call find_by_name on Role" do
-      Role.should_receive(:find_by_name).with('Administrator').and_return(mock_model(Role))
-      @proj.add_administrator(mock_model(User))
-    end
-    
-    context "when the Role is found" do
-      before :each do
-        Role.stub!(:find_by_name).with('Administrator').and_return(mock_model(Role))
-        @proj.add_administrator(mock_model(User, {:name => 'mock admin user'}))
-      end
-      
-      it "should add a new ProjectPrivilege" do
-        @proj.privileges.count.should eq 1
-      end
-
-      it "should add a new ProjectPrivilege per call per User" do
-        @proj.add_administrator(mock_model(User, {:name => 'mock admin user 2'}))
-        @proj.privileges.count.should eq 2
-      end
-    end
-  end 
-  
-  describe "#add_committer" do
+  describe "#add_user_privilege" do
     before :each do
       @proj = FactoryGirl.create :project
+      Role.stub!( :find_by_name ).with( 'awesome_keeper' ).and_return mock_role( :name => 'awesome_keeper' )
+      @proj.add_user_privilege( mock_user(:name => 'jan'), 'awesome_keeper' )
     end
     
-    it "should call find_by_name on Role" do
-      Role.should_receive( :find_by_name ).with( 'Committer' ).and_return mock_role( :name => 'Committer' )
-      @proj.add_committer( mock_model(User, {:name => 'bob'}) )
-    end
-    
-    context "when the Role is found" do
-      before :each do
-        Role.stub!( :find_by_name ).with( 'Committer' ).and_return mock_role( :name => 'Committer' )
-      end
-      
-      it "should add a new ProjectPrivilege of Committer per call per User" do
-        @proj.add_committer( mock_user( :name => 'alice' ) )
-        @proj.privileges.count.should eq 1
-      
-        @proj.add_committer( mock_user( :name => 'mary' ) )
-        @proj.privileges.count.should eq 2
-      end
-    end
-  end
-  
-  describe "#add_reviewer" do
-    before :each do
-      @proj = FactoryGirl.create :project
-    end
-    
-    it "should call find_by_name on Role" do
-      Role.should_receive( :find_by_name ).with( 'Reviewer' ).and_return mock_role( :name => 'Reviewer' )
-      @proj.add_reviewer( mock_user( :name => 'sam' ))
-    end
-    
-    it "should add a new ProjectPrivilege of Reviewer per call per User" do
-      Role.stub!( :find_by_name ).with( 'Reviewer' ).and_return mock_role( :name => 'Reviewer' )
-      
-      @proj.add_reviewer( mock_user( :name => 'nora' ))
+    it "should add a new privilege for the user" do
       @proj.privileges.count.should eq 1
+    end
     
-      @proj.add_reviewer( mock_user( :name => 'dora' ))
-      @proj.privileges.count.should eq 2
+    it "should have one privilege for that user with the specified role" do  
+      @proj.privileges.stub!( :find_by_id ).with( @proj.id ).and_return mock_role( :name => 'awesome_keeper' )
+      @proj.privileges.find_by_id( @proj.id ).role.name.should eq 'awesome_keeper'
     end
   end
   
-  describe "#add_tester" do
+  describe "#remove_user_privilege" do
     before :each do
       @proj = FactoryGirl.create :project
+      @user = mock_user( :name => 'fish' )
+      Role.stub!( :find_by_name ).with( 'bad_guy_remover' ).and_return mock_role( :name => 'bad_guy_remover' )
+      @proj.add_user_privilege( @user, 'bad_guy_remover' )
     end
     
-    it "should call find_by_name on Role" do
-      Role.should_receive( :find_by_name ).with( 'Tester' ).and_return mock_role( :name => 'Tester' )
-      @proj.add_tester( mock_user( :name => 'tom' ))
-    end
-    
-    it "should add a new ProjectPrivilege of Reviewer per call per User" do
-      Role.stub!( :find_by_name ).with( 'Tester' ).and_return mock_role( :name => 'Tester' )
-      
-      @proj.add_tester( mock_user( :name => 'dom' ))
-      @proj.privileges.count.should eq 1
-    
-      @proj.add_tester( mock_user( :name => 'crom' ))
-      @proj.privileges.count.should eq 2
+    it "should remove the user's privilege" do
+      @proj.remove_user_privilege( @user, 'bad_guy_remover' )
+      @proj.privileges.count.should eq 0
     end
   end
-
-  describe "#editor?" do
+  
+  describe "#administrator?" do
     before :each do
-      @user = FactoryGirl.create(:user)
-      @proj = FactoryGirl.create(:project)
+      @user = FactoryGirl.create :user
+      @proj = FactoryGirl.create :project
     end
-    it "should return true if the user is an editor" do
-      editor = FactoryGirl.create(:editor)
+    it "should return true if the user is an administrator (all administrator privileges)" do
+      administrator_role = FactoryGirl.create :administrator
       
-      @proj.privileges.create!({:user => @user, :role => editor})
-      @proj.editor?(@user).should eq true
+      @proj.privileges.create!({:user => @user, :role => administrator_role})
+      @proj.administrator?( @user ).should be_true
     end
 
     it "should return false if the user is not an editor" do
-      read_only_role = FactoryGirl.create(:read_only_role)
+      reviewer_role = FactoryGirl.create :reviewer
 
-      @proj.privileges.create!( {:user => @user, :role => read_only_role} )
-      @proj.editor?(@user).should be_false
+      @proj.privileges.create!( {:user => @user, :role => reviewer_role} )
+      @proj.administrator?( @user ).should be_false
+    end
+  end
+  
+  describe "#editor?" do
+    before :each do
+      @user = FactoryGirl.create :user
+      @proj = FactoryGirl.create :project
+    end
+    it "should return true if the user is an editor (all administrator privileges)" do
+      editor_role = FactoryGirl.create :administrator
+      
+      @proj.privileges.create!({:user => @user, :role => editor_role})
+      @proj.editor?( @user ).should be_true
+    end
+
+    it "should return false if the user is not an editor" do
+      reviewer_role = FactoryGirl.create :reviewer
+
+      @proj.privileges.create!( {:user => @user, :role => reviewer_role} )
+      @proj.editor?( @user ).should be_false
+    end
+  end
+  
+  describe "#committer?" do
+    before :each do
+      @user = FactoryGirl.create :user
+      @proj = FactoryGirl.create :project
+    end
+    
+    it "should return true if the user is a committer (has commit and checkout privileges only)" do
+      committer_role = FactoryGirl.create :committer
+
+      @proj.privileges.create!({ :user => @user, :role => committer_role })
+      @proj.committer?( @user ).should be_true
+    end
+    
+    it "should return false if otherwise" do
+      reviewer_role = FactoryGirl.create :reviewer
+      
+      @proj.privileges.create!({ :user => @user, :role => reviewer_role })
+      @proj.committer?( @user ).should be_false
+    end
+  end
+  
+  describe "#reviewer?" do
+    before :each do
+      @user = FactoryGirl.create :user
+      @proj = FactoryGirl.create :project
+    end
+    
+    it "should return true if the user is a reviewer (has checkout privileges only)" do
+      reviewer_role = FactoryGirl.create :reviewer
+
+      @proj.privileges.create!({ :user => @user, :role => reviewer_role })
+      @proj.reviewer?( @user ).should be_true
+    end
+    
+    it "should return false if otherwise" do
+      blank_role = FactoryGirl.create :role
+      
+      @proj.privileges.create!({ :user => @user, :role => blank_role })
+      @proj.reviewer?( @user ).should be_false
+    end
+  end
+
+  describe "#tester?" do
+    before :each do
+      @user = FactoryGirl.create :user
+      @proj = FactoryGirl.create :project
+    end
+    
+    it "should return true if the user is a tester (has checkout privileges only)" do
+      tester_role = FactoryGirl.create :tester
+
+      @proj.privileges.create!({ :user => @user, :role => tester_role })
+      @proj.tester?( @user ).should be_true
+    end
+    
+    it "should return false if otherwise" do
+      blank_role = FactoryGirl.create :role
+      
+      @proj.privileges.create!({ :user => @user, :role => blank_role })
+      @proj.tester?( @user ).should be_false
     end
   end
   
