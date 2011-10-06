@@ -100,6 +100,73 @@ describe Project do
       end
     end
   end 
+  
+  describe "#add_committer" do
+    before :each do
+      @proj = FactoryGirl.create :project
+    end
+    
+    it "should call find_by_name on Role" do
+      Role.should_receive( :find_by_name ).with( 'Committer' ).and_return mock_role( :name => 'Committer' )
+      @proj.add_committer( mock_model(User, {:name => 'bob'}) )
+    end
+    
+    context "when the Role is found" do
+      before :each do
+        Role.stub!( :find_by_name ).with( 'Committer' ).and_return mock_role( :name => 'Committer' )
+      end
+      
+      it "should add a new ProjectPrivilege of Committer per call per User" do
+        @proj.add_committer( mock_user( :name => 'alice' ) )
+        @proj.privileges.count.should eq 1
+      
+        @proj.add_committer( mock_user( :name => 'mary' ) )
+        @proj.privileges.count.should eq 2
+      end
+    end
+  end
+  
+  describe "#add_reviewer" do
+    before :each do
+      @proj = FactoryGirl.create :project
+    end
+    
+    it "should call find_by_name on Role" do
+      Role.should_receive( :find_by_name ).with( 'Reviewer' ).and_return mock_role( :name => 'Reviewer' )
+      @proj.add_reviewer( mock_user( :name => 'sam' ))
+    end
+    
+    it "should add a new ProjectPrivilege of Reviewer per call per User" do
+      Role.stub!( :find_by_name ).with( 'Reviewer' ).and_return mock_role( :name => 'Reviewer' )
+      
+      @proj.add_reviewer( mock_user( :name => 'nora' ))
+      @proj.privileges.count.should eq 1
+    
+      @proj.add_reviewer( mock_user( :name => 'dora' ))
+      @proj.privileges.count.should eq 2
+    end
+  end
+  
+  describe "#add_tester" do
+    before :each do
+      @proj = FactoryGirl.create :project
+    end
+    
+    it "should call find_by_name on Role" do
+      Role.should_receive( :find_by_name ).with( 'Tester' ).and_return mock_role( :name => 'Tester' )
+      @proj.add_tester( mock_user( :name => 'tom' ))
+    end
+    
+    it "should add a new ProjectPrivilege of Reviewer per call per User" do
+      Role.stub!( :find_by_name ).with( 'Tester' ).and_return mock_role( :name => 'Tester' )
+      
+      @proj.add_tester( mock_user( :name => 'dom' ))
+      @proj.privileges.count.should eq 1
+    
+      @proj.add_tester( mock_user( :name => 'crom' ))
+      @proj.privileges.count.should eq 2
+    end
+  end
 
   describe "#editor?" do
     before :each do

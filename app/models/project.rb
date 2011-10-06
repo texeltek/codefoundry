@@ -39,9 +39,20 @@ class Project < ActiveRecord::Base
     self.param = to_param
   end
  
-  def add_administrator(user)
-    r = Role.find_by_name 'Administrator'
-    privileges.create!({ :user => user, :role => r })
+  def add_administrator user
+    privileges.create!({ :user => user, :role => Role.find_by_name( 'Administrator' )})
+  end
+  
+  def add_committer user
+    privileges.create!({ :user => user, :role => Role.find_by_name( 'Committer' )})
+  end
+
+  def add_reviewer user
+    privileges.create!({ :user => user, :role => Role.find_by_name( 'Reviewer' )})
+  end
+
+  def add_tester user
+    privileges.create!({ :user => user, :role => Role.find_by_name( 'Tester' )})
   end
 
   # Is this user an editor?

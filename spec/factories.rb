@@ -19,12 +19,22 @@ FactoryGirl.define do
 
   factory :project do
     name "sample-project"
-
+    
     factory :full_project do
       summary "full sample project"
       description "this is a fully-defined sample project"
       hits 99
       avatar_file_name "sample-proj.jpg"
+      avatar_content_type "image/jpeg"
+      avatar_file_size 1024
+      avatar_updated_at "2011-01-01"
+    end
+    
+    factory :fooproj do
+      summary "foo project"
+      description "this is a foo project"
+      hits 1
+      avatar_file_name "fooproj.jpg"
       avatar_content_type "image/jpeg"
       avatar_file_size 1024
       avatar_updated_at "2011-01-01"
@@ -75,6 +85,15 @@ FactoryGirl.define do
       size 1000
       scm 1
       summary 'baseline repo'
+    end
+    
+    factory :project_repository do
+      path '/foorepo'
+      association :project, :factory => :fooproj, :name => 'fooproj'
+      param 'foorepo'
+      size 1000
+      scm 1
+      summary 'foo project repo'
     end
   end
 
