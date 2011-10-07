@@ -121,6 +121,27 @@ describe Project do
     end
   end
   
+  describe "#committer?" do
+    before :each do
+      @user = FactoryGirl.create :user
+      @proj = FactoryGirl.create :project
+    end
+
+    it "should return true if the user is a committer (has commit and checkout privileges only)" do
+      committer_role = FactoryGirl.create :admin_role
+
+      @proj.privileges.create!({ :user => @user, :role => committer_role })
+      @proj.committer?( @user ).should be_true
+    end
+
+    it "should return false if otherwise" do
+      read_only_role = FactoryGirl.create :read_only_role
+
+      @proj.privileges.create!({ :user => @user, :role => read_only_role })
+      @proj.committer?( @user ).should be_false
+    end
+  end
+  
   it "should create a new instance of User given valid attributes" do
     Project.create(:name => 'proj1')
   end
