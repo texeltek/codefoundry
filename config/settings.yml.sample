@@ -4,8 +4,11 @@ defaults:
   svn_app_config:
     host: localhost
     port: 8001
-  git_app_config:
-    git_path: /usr/bin/git
+  git:
+    path: /usr/bin/git
+    global_readonly_enabled: true
+    upload_pack: true
+    receive_pack: true
   marker:
     link_base: /
 
@@ -15,8 +18,11 @@ development:
   svn_app_config:
     host: localhost
     port: 8001
-  git_app_config:
-    git_path: /usr/bin/git
+  git:
+    path: /usr/bin/git
+    global_readonly_enabled: true
+    upload_pack: true
+    receive_pack: true
   marker:
     link_base: /
 
@@ -26,8 +32,10 @@ test:
   svn_app_config:
     host: localhost
     port: 8001
-  git_app_config:
-    git_path: /usr/bin/git
+  git:
+    path: /usr/bin/git
+    global_readonly_enabled: true
+    upload_pack: true
+    receive_pack: true
   marker:
     link_base: /
-
