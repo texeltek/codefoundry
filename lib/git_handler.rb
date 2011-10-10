@@ -34,10 +34,13 @@ class GitHandler
 
     if m
 
+      # anybody with a valid cert and key can clone any repository of any project if true
+      git_global_readonly_enabled = Settings.git_global_readonly_enabled || false
+
       # look for the user, project and repository in CF
       user = User.find_by_x509_dn    env['SSL_CLIENT_S_DN']
-      proj = Project.find_by_name    m[1]
-      repo = Repository.find_by_name m[2]
+      proj = Project.by_param        m[1]
+      repo = Repository.by_param     m[2]
       
       r_action = GIT_READ_RE.match  env['QUERY_STRING'] 
       w_action = GIT_WRITE_RE.match env['QUERY_STRING']
@@ -53,15 +56,16 @@ class GitHandler
       elsif !repo
         Rails.logger.error "Repository #{m[2]} not found in project #{m[1]}"
         return [404, PLAIN_TYPE, [""]]
-
-      elsif !proj.users.include? user
+      
+      elsif !proj.users.include?(user) && !git_global_readonly_enabled 
         Rails.logger.error "User #{user.username} does not have access to project #{m[1]}"
+        Rails.logger.error "git_global_readonly_enabled is set to #{git_global_readonly_enabled}" 
         return [403, PLAIN_TYPE, [""]]
 
       elsif w_action && !proj.committer?(user)
         Rails.logger.error "User #{user.username} does not have write access to project #{m[1]}"
         return [403, PLAIN_TYPE, [""]]
-
+        
       else
         # remove the prefix
         env['PATH_INFO'] = "/git/#{m[1]}/#{m[2]}.git#{m[3]}"

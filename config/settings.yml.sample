@@ -8,6 +8,7 @@ defaults:
     git_path: /usr/bin/git
   marker:
     link_base: /
+  git_global_read_only: true
 
 development:
   repository_base_path: /var/codefoundry
@@ -19,6 +20,7 @@ development:
     git_path: /usr/bin/git
   marker:
     link_base: /
+  git_global_read_only: true
 
 test:
   repository_base_path: /var/codefoundry
@@ -30,4 +32,5 @@ test:
     git_path: /usr/bin/git
   marker:
     link_base: /
+  git_global_read_only: true
 
