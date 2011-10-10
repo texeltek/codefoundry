@@ -4,7 +4,7 @@ class UpdateRoles < ActiveRecord::Migration
     add_column :roles, :add_others, :boolean, :default => false
     add_column :roles, :create_delete_repositories, :boolean, :default => false
     add_column :roles, :commit, :boolean, :default => false
-    add_column :roles, :checkout, :boolean, :deafult => false
+    add_column :roles, :checkout, :boolean, :default => false
 
     r = Role.find_by_name 'Administrator'
     r.edit_project = true
