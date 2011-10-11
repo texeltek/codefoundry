@@ -13,9 +13,9 @@ class GitHandler
 
     @config = {
         :project_root => Settings.repository_base_path,
-        :git_path => Settings.git_app_config.git_path,
-        :upload_pack => true,
-        :receive_pack => true
+        :git_path => Settings.git.path,
+        :upload_pack => Settings.git.upload_pack,
+        :receive_pack => Settings.git.receive_pack
       }
 
     @git_provider = GitHttp::App.new
@@ -29,46 +29,46 @@ class GitHandler
     short_match = GIT_SHORTCUT_RE.match env['PATH_INFO'] 
     long_match = MATCH_RE.match env['PATH_INFO'] 
 
-    m = short_match if short_match
-    m = long_match if long_match
+    path = short_match if short_match
+    path = long_match if long_match
 
-    if m
+    if path
 
       # anybody with a valid cert and key can clone any repository of any project if true
-      git_global_readonly_enabled = Settings.git_global_readonly_enabled || false
+      git_global_readonly_enabled = Settings.git.global_readonly_enabled || false
 
       # look for the user, project and repository in CF
       user = User.find_by_x509_dn    env['SSL_CLIENT_S_DN']
-      proj = Project.by_param        m[1]
-      repo = Repository.by_param     m[2]
+      proj = Project.by_param        path[1]
+      repo = Repository.by_param     path[2]
       
       r_action = GIT_READ_RE.match  env['QUERY_STRING'] 
       w_action = GIT_WRITE_RE.match env['QUERY_STRING']
       
       if !user
-        Rails.logger.error "User #{m[1]} not found in CodeFoundry"
+        Rails.logger.error "User #{path[1]} not found in CodeFoundry"
         return [401, PLAIN_TYPE, [""]]
 
       elsif !proj
-        Rails.logger.error "Project #{m[1]} not found in CodeFoundry"
+        Rails.logger.error "Project #{path[1]} not found in CodeFoundry"
         return [404, PLAIN_TYPE, [""]]
 
       elsif !repo
-        Rails.logger.error "Repository #{m[2]} not found in project #{m[1]}"
+        Rails.logger.error "Repository #{path[2]} not found in project #{path[1]}"
         return [404, PLAIN_TYPE, [""]]
       
       elsif !proj.users.include?(user) && !git_global_readonly_enabled 
-        Rails.logger.error "User #{user.username} does not have access to project #{m[1]}"
+        Rails.logger.error "User #{user.username} does not have access to project #{path[1]}"
         Rails.logger.error "git_global_readonly_enabled is set to #{git_global_readonly_enabled}" 
         return [403, PLAIN_TYPE, [""]]
 
       elsif w_action && !proj.committer?(user)
-        Rails.logger.error "User #{user.username} does not have write access to project #{m[1]}"
+        Rails.logger.error "User #{user.username} does not have write access to project #{path[1]}"
         return [403, PLAIN_TYPE, [""]]
         
       else
         # remove the prefix
-        env['PATH_INFO'] = "/git/#{m[1]}/#{m[2]}.git#{m[3]}"
+        env['PATH_INFO'] = "/git/#{path[1]}/#{path[2]}.git#{path[3]}"
         @git_provider.call( env )
       end
     else
