@@ -39,6 +39,12 @@ GEM
       activerecord (>= 3.0.7)
       activerecord (>= 3.0.7)
     builder (2.1.2)
+    capistrano (2.9.0)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.1.0)
     cocaine (0.1.0)
     coderay (0.9.8)
     daemons (1.1.4)
@@ -55,6 +61,7 @@ GEM
     grit (2.4.1)
       diff-lcs (~> 1.1)
       mime-types (~> 1.15)
+    highline (1.6.2)
     i18n (0.5.0)
     jquery-rails (1.0.12)
       railties (~> 3.0)
@@ -67,6 +74,13 @@ GEM
     marker (0.3.3)
       treetop (>= 1.4.2)
     mime-types (1.16)
+    net-scp (1.0.4)
+      net-ssh (>= 1.99.1)
+    net-sftp (2.0.5)
+      net-ssh (>= 2.0.9)
+    net-ssh (2.1.4)
+    net-ssh-gateway (1.1.0)
+      net-ssh (>= 1.99.1)
     paperclip (2.3.16)
       activerecord (>= 2.3.0)
       activesupport (>= 2.3.2)
@@ -124,6 +138,7 @@ PLATFORMS
 
 DEPENDENCIES
   authlogic
+  capistrano
   coderay
   delayed_job
   factory_girl_rails (~> 1.2)

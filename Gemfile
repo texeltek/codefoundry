@@ -58,6 +58,9 @@ gem 'settingslogic'
 # use jQuery instead of prototype
 gem 'jquery-rails'
 
+# use capistrano for deployment
+gem 'capistrano'
+
 group :development, :test do
   gem 'rspec'
   gem 'rspec-rails'
