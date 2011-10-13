@@ -1,28 +1,40 @@
 set :application, "codefoundry"
 set :repository,  "git://github.com/texeltek/codefoundry.git"
 set :scm, :git
+set :branch, "dev/capistrano"
 
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
 
 set :user, "vagrant"
 set :password, "vagrant"
 
+set :use_sudo, true
+
 set :codefoundry_home, "/var/www/vhosts/codefoundry"
 
-set :deploy_to, "#{codefoundry_home}/current"
+set :deploy_to, "#{codefoundry_home}/deployment"
 
-role :web, "127.0.0.1"                          # Your HTTP server, Apache/etc
-role :app, "127.0.0.1"                          # This may be the same as your `Web` server
-#role :db,  "your primary db-server here", :primary => true # This is where Rails migrations will run
+role :web, "vagrant@127.0.0.1:2222"                          # Your HTTP server, Apache/etc
+role :app, "vagrant@127.0.0.1:2222"                          # This may be the same as your `Web` server
+role :db,  "vagrant@127.0.0.1:2222", :primary => true # This is where Rails migrations will run
 
 set :shared_database_path, "#{codefoundry_home}/db"
+set :shared_config_path, "#{codefoundry_home}/config"
+
+namespace :shared do
+  desc "Create shared config directory"
+  task :mk_shared_dirs, :roles => :app do
+    run "sudo mkdir -p #{shared_config_path}"
+    run "sudo chown -R vagrant.vagrant #{shared_config_path}"
+  end
+end
 
 namespace :sqlite3 do
   desc "Generate a database configuration file"
   task :build_configuration, :roles => :db do
     db_options = {
       "adapter"  => "sqlite3",
-      "database" => "#{shared_database_path}/development.sqlite3"
+      "database" => "#{shared_database_path}/production.sqlite3"
     }
     config_options = {"production" => db_options}.to_yaml
     put config_options, "#{shared_config_path}/sqlite_config.yml"
@@ -35,14 +47,26 @@ namespace :sqlite3 do
  
   desc "Make a shared database folder"
   task :make_shared_folder, :roles => :db do
-    run "mkdir -p #{shared_database_path}"
+    run "mkdir -p -m 775 #{shared_database_path}"
+    run "sudo chown -R vagrant.vagrant #{shared_database_path}"
   end
 end
 
+namespace :deps do
+  desc "Install gems from Gemfile"
+  task :bundle_install, :roles => [:app, :web] do
+    run "bundle install"
+  end
+end
+
+before "deploy:migrate", "sqlite3:link_configuration_file"
+
+after "deploy:setup", "shared:mk_shared_dirs"
 after "deploy:setup", "sqlite3:make_shared_folder"
 after "deploy:setup", "sqlite3:build_configuration"
+
+after "deploy", "deps:bundle_install"
  
-before "deploy:migrate", "sqlite3:link_configuration_file"
 
 
 # if you're still using the script/reaper helper you will need
