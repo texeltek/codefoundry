@@ -9,10 +9,10 @@ set :password, "vagrant"
 
 set :codefoundry_home, "/var/www/vhosts/codefoundry"
 
-set :deploy_to, "#{codefoundry_home}/current"
+set :deploy_to, "#{codefoundry_home}/deployment"
 
-role :web, "127.0.0.1"                          # Your HTTP server, Apache/etc
-role :app, "127.0.0.1"                          # This may be the same as your `Web` server
+role :web, "vagrant@127.0.0.1:2222"                          # Your HTTP server, Apache/etc
+role :app, "vagrant@127.0.0.1:2222"                          # This may be the same as your `Web` server
 #role :db,  "your primary db-server here", :primary => true # This is where Rails migrations will run
 
 set :shared_database_path, "#{codefoundry_home}/db"
