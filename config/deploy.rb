@@ -1,6 +1,7 @@
 set :application, "codefoundry"
 set :repository,  "git://github.com/texeltek/codefoundry.git"
 set :scm, :git
+set :branch, "dev/capistrano"
 
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
 
@@ -51,12 +52,21 @@ namespace :sqlite3 do
   end
 end
 
+namespace :deps do
+  desc "Install gems from Gemfile"
+  task :bundle_install, :roles => [:app, :web] do
+    run "bundle install"
+  end
+end
+
+before "deploy:migrate", "sqlite3:link_configuration_file"
+
 after "deploy:setup", "shared:mk_shared_dirs"
 after "deploy:setup", "sqlite3:make_shared_folder"
 after "deploy:setup", "sqlite3:build_configuration"
 
+after "deploy", "deps:bundle_install"
  
-before "deploy:migrate", "sqlite3:link_configuration_file"
 
 
 # if you're still using the script/reaper helper you will need
