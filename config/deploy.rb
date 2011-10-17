@@ -1,11 +1,24 @@
+# main capistrano settings
 set :application, "codefoundry"
+set :codefoundry_home, "/var/www/vhosts/codefoundry"
+set :deploy_to, "#{codefoundry_home}/deployment"
+role :web, "192.168.20.33"                          # Your HTTP server, Apache/etc
+role :app, "192.168.20.33"                          # This may be the same as your `Web` server
+role :db,  "192.168.20.33", :primary => true # This is where Rails migrations will run
+
+# system settings
+set :user, "acurry"
+set :use_sudo, true
+default_run_options[:pty] = true     # enable tty in the shell
+default_run_options[:shell] = 'bash' # use bash
+
+# git settings
 set :repository,  "git://github.com/texeltek/codefoundry.git"
 set :scm, :git
 set :branch, "dev/capistrano"
 
+# rails and RVM extensions
 set :rails_env, "production"
-
-# RVM extensions
 set :rvm_ruby, "ruby-1.9.2-p290"
 set :rvm_gem_home, "/usr/local/rvm/gems/#{fetch(:rvm_ruby)}"
 set :rvm_ruby_path, "/usr/local/rvm/rubies/#{fetch(:rvm_ruby)}"
@@ -17,26 +30,7 @@ set :default_environment, {
   'PATH' => "#{fetch(:rvm_gem_home)}/bin:#{fetch(:rvm_gem_home)}@global/bin:#{fetch(:rvm_ruby_path)}/bin:/home/rails/.rvm/bin:$PATH",
 }
 
-
-# Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
-
-set :user, "acurry"
-
-set :use_sudo, true
-
-set :codefoundry_home, "/var/www/vhosts/codefoundry"
-
-set :deploy_to, "#{codefoundry_home}/deployment"
-
-role :web, "192.168.20.33"                          # Your HTTP server, Apache/etc
-role :app, "192.168.20.33"                          # This may be the same as your `Web` server
-role :db,  "192.168.20.33", :primary => true # This is where Rails migrations will run
-
-# enable tty in the shell
-default_run_options[:pty] = true
-# use bash
-default_run_options[:shell] = 'bash'
-
+# shared directories
 set :shared_database_path, "#{codefoundry_home}/db"
 set :shared_config_path, "#{codefoundry_home}/config"
 
@@ -45,11 +39,10 @@ namespace :shared do
   task :mk_shared_dirs, :roles => :app do
     run "sudo mkdir -p #{shared_config_path}"
     run "sudo mkdir -p #{shared_database_path}"
-    # run "sudo chown -R #{user}.#{user} #{shared_config_path}"
-    # run "sudo chown -R #{user}.#{user} #{shared_database_path}"
   end
 end
 
+# sqlite3 setup
 namespace :sqlite3 do
   desc "Generate a database configuration file"
   task :build_configuration, :roles => :db do
@@ -69,26 +62,18 @@ namespace :sqlite3 do
   desc "Make a shared database folder"
   task :make_shared_folder, :roles => :db do
     run "mkdir -p -m 775 #{shared_database_path}"
-    # run "sudo chown -R #{user}.#{user} #{shared_database_path}"
   end
 end
 
-namespace :deps do
-  desc "Install gems from Gemfile"
-  task :bundle_install, :roles => [:app, :web] do
-    run "bundle install"
-  end
-end
-
+# config/settings.yml
 namespace :codefoundry do
   desc "Copy settings.yml.sample to settings.yml"
   task :settings, :roles => :app do
-    run "cp #{release_path}/config/settings.yml.sample #{release_path}/config/settings.yml"
+    run "ln -nsf #{shared_config_path}/settings.yml #{release_path}/config/settings.yml"
   end
-
 end
 
-
+# post deploy hooks
 after "deploy:setup", "sqlite3:make_shared_folder"
 after "deploy:setup", "sqlite3:build_configuration"
 
