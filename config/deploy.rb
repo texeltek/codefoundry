@@ -5,8 +5,8 @@ set :branch, "dev/capistrano"
 
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
 
-set :user, "vagrant"
-set :password, "vagrant"
+set :user, "codefoundry"
+set :password, "codefoundry"
 
 set :use_sudo, true
 
@@ -14,9 +14,12 @@ set :codefoundry_home, "/var/www/vhosts/codefoundry"
 
 set :deploy_to, "#{codefoundry_home}/deployment"
 
-role :web, "vagrant@127.0.0.1:2222"                          # Your HTTP server, Apache/etc
-role :app, "vagrant@127.0.0.1:2222"                          # This may be the same as your `Web` server
-role :db,  "vagrant@127.0.0.1:2222", :primary => true # This is where Rails migrations will run
+role :web, "codefoundry@192.168.20.33"                          # Your HTTP server, Apache/etc
+role :app, "codefoundry@192.168.20.33"                          # This may be the same as your `Web` server
+role :db,  "codefoundry@192.168.20.33", :primary => true # This is where Rails migrations will run
+
+# enable tty in the shell
+default_run_options[:pty] = true
 
 set :shared_database_path, "#{codefoundry_home}/db"
 set :shared_config_path, "#{codefoundry_home}/config"
@@ -25,7 +28,9 @@ namespace :shared do
   desc "Create shared config directory"
   task :mk_shared_dirs, :roles => :app do
     run "sudo mkdir -p #{shared_config_path}"
-    run "sudo chown -R vagrant.vagrant #{shared_config_path}"
+    run "sudo mkdir -p #{shared_database_path}"
+    run "sudo chown -R #{user}.#{user} #{shared_config_path}"
+    run "sudo chown -R #{user}.#{user} #{shared_database_path}"
   end
 end
 
@@ -48,7 +53,7 @@ namespace :sqlite3 do
   desc "Make a shared database folder"
   task :make_shared_folder, :roles => :db do
     run "mkdir -p -m 775 #{shared_database_path}"
-    run "sudo chown -R vagrant.vagrant #{shared_database_path}"
+    run "sudo chown -R #{user}.#{user} #{shared_database_path}"
   end
 end
 
