@@ -3,10 +3,11 @@ set :repository,  "git://github.com/texeltek/codefoundry.git"
 set :scm, :git
 set :branch, "dev/capistrano"
 
+set :rails_env, "production"
+
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
 
 set :user, "acurry"
-# set :password, "codefoundry"
 
 set :use_sudo, true
 
@@ -23,10 +24,6 @@ default_run_options[:pty] = true
 
 set :shared_database_path, "#{codefoundry_home}/db"
 set :shared_config_path, "#{codefoundry_home}/config"
-
-before "deploy:migrate", "sqlite3:make_shared_folder"
-before "deploy:migrate", "sqlite3:build_configuration"
-before "deploy:migrate", "sqlite3:link_configuration_file"
 
 namespace :shared do
   desc "Create shared config directory"
@@ -68,11 +65,10 @@ namespace :deps do
   end
 end
 
+after "deploy:setup", "sqlite3:make_shared_folder"
+after "deploy:setup", "sqlite3:build_configuration"
 
-
-# after "deploy", "deps:bundle_install"
- 
-
+before "deploy:migrate", "sqlite3:link_configuration_file"
 
 # If you are using Passenger mod_rails uncomment this:
 namespace :deploy do
