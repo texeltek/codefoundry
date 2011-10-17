@@ -39,3 +39,17 @@ test:
     receive_pack: true
   marker:
     link_base: /
+
+production:
+  repository_base_path: /var/codefoundry
+  repository_archive_path: /var/codefoundry/archive
+  svn_app_config:
+    host: localhost
+    port: 8001
+  git:
+    path: /usr/bin/git
+    global_readonly_enabled: true
+    upload_pack: true
+    receive_pack: true
+  marker:
+    link_base: /
