@@ -31,3 +31,13 @@ test:
   marker:
     link_base: /
 
+production:
+  repository_base_path: /var/codefoundry
+  repository_archive_path: /var/codefoundry/archive
+  svn_app_config:
+    host: localhost
+    port: 8001
+  git_app_config:
+    git_path: /usr/bin/git
+  marker:
+    link_base: /
