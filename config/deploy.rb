@@ -24,6 +24,10 @@ default_run_options[:pty] = true
 set :shared_database_path, "#{codefoundry_home}/db"
 set :shared_config_path, "#{codefoundry_home}/config"
 
+before "deploy:migrate", "sqlite3:make_shared_folder"
+before "deploy:migrate", "sqlite3:build_configuration"
+before "deploy:migrate", "sqlite3:link_configuration_file"
+
 namespace :shared do
   desc "Create shared config directory"
   task :mk_shared_dirs, :roles => :app do
@@ -64,9 +68,6 @@ namespace :deps do
   end
 end
 
-before "deploy:migrate", "sqlite3:make_shared_folder"
-before "deploy:migrate", "sqlite3:build_configuration"
-before "deploy:migrate", "sqlite3:link_configuration_file"
 
 
 # after "deploy", "deps:bundle_install"
