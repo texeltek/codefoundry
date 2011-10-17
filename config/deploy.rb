@@ -5,8 +5,8 @@ set :branch, "dev/capistrano"
 
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
 
-set :user, "codefoundry"
-set :password, "codefoundry"
+set :user, "acurry"
+# set :password, "codefoundry"
 
 set :use_sudo, true
 
@@ -14,9 +14,9 @@ set :codefoundry_home, "/var/www/vhosts/codefoundry"
 
 set :deploy_to, "#{codefoundry_home}/deployment"
 
-role :web, "codefoundry@192.168.20.33"                          # Your HTTP server, Apache/etc
-role :app, "codefoundry@192.168.20.33"                          # This may be the same as your `Web` server
-role :db,  "codefoundry@192.168.20.33", :primary => true # This is where Rails migrations will run
+role :web, "192.168.20.33"                          # Your HTTP server, Apache/etc
+role :app, "192.168.20.33"                          # This may be the same as your `Web` server
+role :db,  "192.168.20.33", :primary => true # This is where Rails migrations will run
 
 # enable tty in the shell
 default_run_options[:pty] = true
@@ -29,8 +29,8 @@ namespace :shared do
   task :mk_shared_dirs, :roles => :app do
     run "sudo mkdir -p #{shared_config_path}"
     run "sudo mkdir -p #{shared_database_path}"
-    run "sudo chown -R #{user}.#{user} #{shared_config_path}"
-    run "sudo chown -R #{user}.#{user} #{shared_database_path}"
+    # run "sudo chown -R #{user}.#{user} #{shared_config_path}"
+    # run "sudo chown -R #{user}.#{user} #{shared_database_path}"
   end
 end
 
@@ -47,13 +47,13 @@ namespace :sqlite3 do
  
   desc "Links the configuration file"
   task :link_configuration_file, :roles => :db do
-    run "ln -nsf #{shared_config_path}/sqlite_config.yml #{release_path}/config/database.yml"
+    run "cp #{shared_config_path}/sqlite_config.yml #{release_path}/config/database.yml"
   end
  
   desc "Make a shared database folder"
   task :make_shared_folder, :roles => :db do
     run "mkdir -p -m 775 #{shared_database_path}"
-    run "sudo chown -R #{user}.#{user} #{shared_database_path}"
+    # run "sudo chown -R #{user}.#{user} #{shared_database_path}"
   end
 end
 
@@ -64,24 +64,20 @@ namespace :deps do
   end
 end
 
+before "deploy:migrate", "sqlite3:make_shared_folder"
+before "deploy:migrate", "sqlite3:build_configuration"
 before "deploy:migrate", "sqlite3:link_configuration_file"
 
-after "deploy:setup", "shared:mk_shared_dirs"
-after "deploy:setup", "sqlite3:make_shared_folder"
-after "deploy:setup", "sqlite3:build_configuration"
 
-after "deploy", "deps:bundle_install"
+# after "deploy", "deps:bundle_install"
  
 
 
-# if you're still using the script/reaper helper you will need
-# these http://github.com/rails/irs_process_scripts
-
 # If you are using Passenger mod_rails uncomment this:
-# namespace :deploy do
-#   task :start do ; end
-#   task :stop do ; end
-#   task :restart, :roles => :app, :except => { :no_release => true } do
-#     run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
-#   end
-# end
+namespace :deploy do
+  task :start do ; end
+  task :stop do ; end
+  task :restart, :roles => :app, :except => { :no_release => true } do
+    run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
+  end
+end
