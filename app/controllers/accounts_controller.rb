@@ -23,7 +23,7 @@ class AccountsController < ApplicationController
     @account = current_user
 
     respond_to do |format|
-      if @account.update_attributes(params[:account])
+      if @account.update_attributes(params[:user])
         format.html { redirect_to(account_path, :notice => 'Account was successfully updated.') }
         format.xml  { head :ok }
       else
