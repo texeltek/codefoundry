@@ -15,7 +15,7 @@ default_run_options[:shell] = 'bash' # use bash
 # git settings
 set :repository,  "git://github.com/texeltek/codefoundry.git"
 set :scm, :git
-set :branch, "dev/capistrano"
+set :branch, "master"
 
 # rails and RVM extensions
 set :rails_env, "production"
