@@ -6,6 +6,9 @@ class UpdateRoles < ActiveRecord::Migration
     add_column :roles, :commit, :boolean, :default => false
     add_column :roles, :checkout, :boolean, :default => false
 
+    # reset the Role model to update the 'Administrator', 'Committer', etc, roles
+    Role.reset_column_information
+
     r = Role.find_by_name 'Administrator'
     r.edit_project = true
     r.add_others = true
