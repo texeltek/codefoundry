@@ -35,6 +35,15 @@ private
       return false
     end
   end
+  
+  def require_admin
+    unless current_user && current_user.codefoundry_admin?
+      store_location
+      flash[:notice] = "You must be a CodeFoundry administrator and logged in to access this page."
+      redirect_to login_path
+      return false
+    end
+  end
 
   def store_location
     session[:return_to] = request.fullpath
