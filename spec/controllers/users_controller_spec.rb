@@ -1,29 +1,42 @@
 require 'spec_helper'
 
 describe UsersController do
+  
+  setup :activate_authlogic
+
   describe "#index" do
-    before :each do
-      @mock_users = [mock_user, mock_user]
-    end
-
-    it "should get all Users and store in @users" do
-      User.should_receive( :all ).and_return @mock_users
-      get :index
-      assigns[ :users ].should eq @mock_users
-    end
-
-    context "with html" do
-      it "should render users#index" do
+    context "when current_user is not a CodeFoundry admin" do
+      it "should redirect to the login page" do
         get :index
-        response.should render_template( "index" )
+        response.should redirect_to login_path
       end
     end
-
-    context "with xml" do
-      it "should render @users as xml" do
-        get :index, :format => :xml
-        response.content_type.should eq Mime::XML
+    
+    context "when current_user is a CodeFoundry admin" do
+      before :each do
+        @mock_users = [mock_user, mock_user]
+        admin_login
       end
+
+      it "should get all Users and store in @users" do
+        User.should_receive( :all ).and_return @mock_users
+        get :index
+        assigns[ :users ].should eq @mock_users
+      end
+
+      context "with html" do
+        it "should render users#index" do
+          get :index
+          response.should render_template( "index" )
+        end
+      end
+
+      context "with xml" do
+        it "should render @users as xml" do
+          get :index, :format => :xml
+          response.content_type.should eq Mime::XML
+        end
+      end   
     end
   end
 
@@ -84,6 +97,7 @@ describe UsersController do
   describe "#edit" do
     it "should find user based on params[:id] and store it as @user" do
       @mock_user = mock_user
+      admin_login
       User.should_receive( :by_param ).with( @mock_user.id ).and_return @mock_user
       get :edit, :id => @mock_user.id
       assigns[ :user ].should eq @mock_user
@@ -166,6 +180,7 @@ describe UsersController do
   describe "#update" do
     before :each do
       @mock_user = mock_user
+      admin_login
     end
 
     it "should find user based on params[:id] and assign it to @user" do
@@ -233,8 +248,11 @@ describe UsersController do
   end
 
   describe "#destroy" do
-    before { @mock_user = mock_user }
-
+    before :each do 
+      @mock_user = mock_user
+      admin_login
+    end
+    
     it "should find user based on params[:id] and assign it to @user" do
       User.should_receive( :by_param ).with( @mock_user.id ).and_return @mock_user
       delete :destroy, :id => @mock_user.id
