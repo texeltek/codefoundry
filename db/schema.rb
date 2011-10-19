@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111006211941) do
+ActiveRecord::Schema.define(:version => 20111019011443) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
@@ -89,6 +89,7 @@ ActiveRecord::Schema.define(:version => 20111006211941) do
     t.datetime "updated_at"
     t.string   "time_zone"
     t.string   "x509_dn"
+    t.boolean  "codefoundry_admin", :default => false
   end
 
 end
