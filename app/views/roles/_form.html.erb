@@ -14,6 +14,11 @@
   <% end %>
 
   <p>
+    <%= f.label :name %><br/>
+    <%= f.text_field :name %>
+  </p>
+
+  <p>
     <%= f.label :edit_project %><br/>
     <%= f.select :edit_project, yesno %>
   </p>
