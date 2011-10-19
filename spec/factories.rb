@@ -15,6 +15,10 @@ FactoryGirl.define do
       last_name "doe"
       time_zone "UTC"
     end
+    
+    factory :admin_user do
+      codefoundry_admin true
+    end
   end
 
   factory :project do

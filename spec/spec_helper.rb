@@ -35,8 +35,12 @@ module AuthlogicHelpers
     @current_user_session || mock_model( UserSession, { :user => current_user(user_stubs) }.merge(stubs) )
   end
 
-  def login( session_stubs = {}, user_stubs={} )
-    UserSession.stub!( :find ).and_return( user_session( session_stubs, user_stubs ) )
+  def user_login( session_stubs = {}, user_stubs={} )
+    UserSession.create(FactoryGirl.build(:user))
+  end
+  
+  def admin_login
+    UserSession.create(FactoryGirl.build(:admin_user))
   end
 
   def logout

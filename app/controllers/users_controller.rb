@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  before_filter :require_admin, :except => [:new, :show, :create]
+
   # GET /users
   # GET /users.xml
   def index
