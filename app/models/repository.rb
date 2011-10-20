@@ -58,6 +58,15 @@ class Repository < ActiveRecord::Base
     def destroy_svn_repository(path)
     end
   end
+  
+  # return an Array of Grit::Head objects
+  def branches
+    repo = Grit::Repo.new full_path
+    unless repo
+      raise RepositoryNotFoundException
+    end
+    repo.branches
+  end
 
   # for nice urls
   def to_param
@@ -141,3 +150,4 @@ end
 
 class IncoherantRepositoryError < Exception; end
 class UnsupportedSCMError < Exception; end
+class RepositoryNotFoundError < Exception; end
