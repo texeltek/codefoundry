@@ -1,2 +1,3 @@
 <h1><%= link_to @owner.to_param, @owner %> / <%= link_to @repository.name, polymorphic_path([@owner, @repository]) %></h1>
-
+<p>Clone URL <span style='font-weight: bold;'>(read-only)</span>: 
+<%= text_field_tag 'git_clone_url', "#{git_url( @repository, request.env['HTTPS'], request.env['HTTP_HOST'] )}", :class => 'url_field' %>

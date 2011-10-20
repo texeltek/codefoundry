@@ -139,6 +139,19 @@ ul.horizontal-list li {
   font-style: italic;
 }
 
+/* clone URL textfield */
+input.url_field {
+	float: left;
+	width: 500px;
+	padding: 3px 5px 2px 5px;
+	height: 16px;
+	border: 1px solid #CCC;
+	border-left: none;
+	font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+	font-size: 11px;
+	color: #666;
+}
+
 /* layout styles */
 
 body {
