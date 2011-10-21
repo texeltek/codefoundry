@@ -61,11 +61,17 @@ class Repository < ActiveRecord::Base
   
   # return an Array of Grit::Head objects
   def branches
-    repo = Grit::Repo.new full_path
-    unless repo
-      raise RepositoryNotFoundException
+    case scm
+      when GIT_SCM
+        repo = Grit::Repo.new full_path 
+        unless repo
+          raise RepositoryNotFoundException
+        end
+        return repo.branches
+      else
+        # TODO: fetch an SVN repo's branches
+        raise UnsupportedSCMError
     end
-    repo.branches
   end
 
   # for nice urls
