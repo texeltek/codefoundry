@@ -74,7 +74,7 @@ ActiveRecord::Schema.define(:version => 20111019011443) do
     t.boolean  "add_others",                 :default => false
     t.boolean  "create_delete_repositories", :default => false
     t.boolean  "commit",                     :default => false
-    t.boolean  "checkout"
+    t.boolean  "checkout",                   :default => false
   end
 
   create_table "users", :force => true do |t|
