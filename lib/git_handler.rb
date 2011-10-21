@@ -1,6 +1,6 @@
 class GitHandler
-  MATCH_RE        = Regexp.new('^/projects/(\\w+)/repositories/(\\w+)\.git(/.*)')
-  GIT_SHORTCUT_RE = Regexp.new('^/git/(\\w+)/(\\w+)\.git(/.*)')
+  MATCH_RE        = Regexp.new('^/projects/([_a-zA-Z0-9-]+)/repositories/([_a-zA-Z0-9-]+)\.git(/.*)')
+  GIT_SHORTCUT_RE = Regexp.new('^/git/([_a-zA-Z0-9-]+)/([_a-zA-Z0-9-]+)\.git(/.*)')
   GIT_READ_RE     = Regexp.new('git-upload-pack')  # git clone, git fetch, git pull
   GIT_WRITE_RE    = Regexp.new('git-receive-pack') # git push
 
