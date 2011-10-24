@@ -1,0 +1,16 @@
+<div id='tab-set'>
+  <ul class="tabs">
+  	<li><a href="#text1" class="selected">Files</a></li>
+  	<li><a href="#text2">Branches</a></li>
+  	<li><a href="#text3">Commits</a></li>
+  </ul>
+  <div id="text1">
+  	<p>file viewer</p>
+  </div>
+  <div id="text2">
+    <%= render 'branches' %>
+  </div>
+  <div id="text3">
+  	<%= render 'commits' %>
+  </div>
+</div>

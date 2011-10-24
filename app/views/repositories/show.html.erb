@@ -1,2 +1,13 @@
+<%= stylesheet_link_tag 'tabsplugin/tabs', :media => 'screen, projection' %>
+<%= javascript_include_tag 'tabsplugin/tabs' %>
+<% javascript_tag do %>
+  $(document).ready(function() {
+    blueprint_tabs();
+  });
+<% end%>
 <h1><%= link_to @owner.to_param, @owner %> / <%= link_to @repository.name, polymorphic_path([@owner, @repository]) %></h1>
-
+<p>Clone URL <span style='font-weight: bold;'>(read-only)</span>: 
+<%= text_field_tag 'git_clone_url', "#{git_url( @repository )}", :class => 'url_field' %>
+</p>
+<br/>
+<%= render 'scm_info' %>
