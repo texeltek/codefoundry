@@ -10,4 +10,8 @@ module RepositoriesHelper
   def branch_names repository
     repository.branches.collect { |t| t.name }
   end
+  
+  def pretty_hash( hash, length=7 )
+    hash.to_s[0,length]
+  end
 end

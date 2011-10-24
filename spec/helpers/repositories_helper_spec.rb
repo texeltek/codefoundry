@@ -39,4 +39,14 @@ describe RepositoriesHelper do
       helper.branch_names( @repo ).should eq ["master", "dev1"]
     end
   end
+  
+  describe "pretty_hash" do
+    it "should return the first 8 chars of the hash" do
+      helper.pretty_hash( "809d82291daf5f72461198d8272523a776c0542c" ).should eq "809d822"
+    end
+    
+    it "should return the first n chars of the hash" do
+      helper.pretty_hash( "809d82291daf5f72461198d8272523a776c0542c", 12).should eq "809d82291daf"
+    end
+  end
 end

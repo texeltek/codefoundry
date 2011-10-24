@@ -73,6 +73,19 @@ class Repository < ActiveRecord::Base
         raise UnsupportedSCMError
     end
   end
+  
+  def commits
+    case scm
+    when GIT_SCM
+      repo = Grit::Repo.new full_path
+      unless repo
+        raise RepositoryNotFoundException
+      end
+      return repo.commits
+    else
+      raise UnsupportedSCMError
+    end
+  end
 
   # for nice urls
   def to_param

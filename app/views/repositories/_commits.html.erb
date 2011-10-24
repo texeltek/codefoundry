@@ -1,0 +1,19 @@
+<% javascript_tag do %>
+  $(document).ready( function() {
+    $("tr:odd").css("background-color", "#F5F5F5");
+  });
+<% end %>
+<table>
+  <th>hash</th>
+  <th>comment</th>
+  <th>author</th>
+  <th>date</th>
+  <% @repository.commits.each do |commit| %>
+    <tr>
+      <td class="code"><%= pretty_hash( commit.id ) %></td>
+      <td><%= commit.short_message %></td>
+      <td><%= commit.author %></td>
+      <td><%= time_ago_in_words( commit.date ) %> ago</td>  
+    </tr>
+  <% end %>
+</table>

@@ -139,6 +139,13 @@ ul.horizontal-list li {
   font-style: italic;
 }
 
+/* code text */
+.code {
+	font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+	font-size: 12px;
+	color: #333;
+}
+
 /* clone URL textfield */
 input.url_field {
 	float: left;
