@@ -35,4 +35,8 @@ module ApplicationHelper
     attrs = options.map { |key, val| "#{key}=\"#{val}\"" }.join(' ')
     "<embed #{attrs} />".html_safe
   end
+  
+  def ssl_client_dn
+    return request.env["SSL_CLIENT_S_DN"] || ""
+  end
 end
