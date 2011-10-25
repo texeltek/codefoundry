@@ -14,4 +14,10 @@ module RepositoriesHelper
   def pretty_hash( hash, length=7 )
     hash.to_s[0,length]
   end
+  
+  # extracts the last part of the path
+  # e.g. repository_sub_path("projects/projname/repositories/reponame/commits") = "commits"
+  def repository_sub_path( path )
+    Regexp.new(/\w+$/).match(path).to_s
+  end
 end

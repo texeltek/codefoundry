@@ -27,8 +27,11 @@ Codefoundry::Application.routes.draw do
 
       # revisions and commits are synonymous, but try to use the right one for
       # the right repository
-      get :commits
       get :revisions
+
+      get :files, :to => 'repositories#show', :as => 'files'      
+      get :branches, :to => 'repositories#show', :as => 'branches'
+      get :commits, :to => 'repositories#show', :as => 'commits'
 
       resources :releases
 

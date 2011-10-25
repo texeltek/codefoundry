@@ -49,4 +49,11 @@ describe RepositoriesHelper do
       helper.pretty_hash( "809d82291daf5f72461198d8272523a776c0542c", 12).should eq "809d82291daf"
     end
   end
+  
+  describe "repository_sub_path" do
+    it "should return the last portion of the passed-in partial URL, without the slash" do
+      helper.repository_sub_path( "/projects/fooproj/repositories/foorepo/commits" ).should eq "commits"
+      helper.repository_sub_path( "/projects/fooproj/repositories/foorepo" ).should eq "foorepo"
+    end
+  end
 end

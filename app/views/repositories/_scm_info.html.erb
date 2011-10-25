@@ -1,16 +1,33 @@
 <div id='tab-set'>
   <ul class="tabs">
-  	<li><a href="#text1" class="selected">Files</a></li>
-  	<li><a href="#text2">Branches</a></li>
-  	<li><a href="#text3">Commits</a></li>
+  	<li>
+      <%= 
+        link_to "files", files_project_repository_path(@owner, @repository), 
+        :class => repository_sub_path(controller.request.fullpath) == "files" ||
+        repository_sub_path(controller.request.fullpath) == @repository.to_param ? 'selected' : ''
+       %>
+  	</li>
+  	<li>
+      <%= 
+        link_to "branches", branches_project_repository_path(@owner, @repository), 
+        :class => repository_sub_path(controller.request.fullpath) == "branches" ? 'selected' : ''
+       %>
+  	</li>
+  	<li>
+      <%= 
+        link_to "commits", commits_project_repository_path(@owner, @repository), 
+        :class => repository_sub_path(controller.request.fullpath) == "commits" ? 'selected' : ''
+       %>
+  	</li>
   </ul>
-  <div id="text1">
-  	<p>file viewer</p>
+  <div id="files" style="<%=repository_sub_path(controller.request.fullpath) == "files" ||
+       repository_sub_path(controller.request.fullpath) == @repository.to_param ? 'display: block;' : 'display: none;' %>">
+    <p>file viewer</p>
   </div>
-  <div id="text2">
+  <div id="branches" style="<%=repository_sub_path(controller.request.fullpath) == "branches" ? 'display: block;' : 'display: none;' %>">
     <%= render 'branches' %>
   </div>
-  <div id="text3">
-  	<%= render 'commits' %>
+  <div id="commits" style="<%=repository_sub_path(controller.request.fullpath) == "commits" ? 'display: block;' : 'display: none;' %>">
+    <%= render 'commits' %>
   </div>
 </div>
