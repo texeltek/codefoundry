@@ -25,7 +25,7 @@ gem 'grit', '~> 2.3' # git
 gem 'grack', :git => 'git://github.com/rdblue/grack.git', :require => 'git_http'
 
 # x509 certs made with the power of ruby!
-gem 'certificate_authority'
+gem 'certificate_authority', :git => 'https://github.com/cchandler/certificate_authority'
 
 # background processing framework
 gem 'delayed_job'

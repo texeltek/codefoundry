@@ -4,7 +4,16 @@
 # config/ca.yml is listed in CodeFoundry's .gitignore
 
 ca:
-  name: texeltekcf-ca
+  name: texeltekcf-ca                         # name of the cert CA
+  common_name: 192.168.20.33                  # the IP or DNS name of the server that CodeFoundry is running on
+  organization: "TexelTek, Inc."              # name of the CA's organization
+  organizational_unit: texeltekcf             # sub-unit of the CA's organizations
+  locality: "Annapolis Junction"              # city or area name
+  state: Maryland                             # state's name or its two-letter abbreviation (Maryland || MD)
+  country: US                                 # two-letter country code (US)
+  email_address: texeltekcf-ca@texeltek.com   # not a required field in certificate_authority
+  signing_entity: true                        # MUST BE SET TO TRUE IN ORDER TO SIGN USER CERTS USING THIS CA
+  serial_number: 1                            # CA certificate is the root certificate so its serial number is 1
 
 texeltekcf-ca:
   dir: /etc/apache2/ssl
@@ -52,9 +61,9 @@ req_distinguished_name:
   commonName_max: 64
 
 distinguished_name_defaults:
-  organizationName_default: TexelTek, Inc.
+  organizationName_default: "TexelTek, Inc."
   organizationalUnitName_Default: texeltekcf
-  localityName_default: Annapolis Junction
+  localityName_default: "Annapolis Junction"
   stateOrProvinceName_default: Maryland
   countryName_default: US
   emailAddress_default: your_texeltek_username@texeltek.com
