@@ -2,6 +2,7 @@ vendor/cache/*
 public/projects
 config/database.yml
 config/settings.yml
+config/ca.yml
 log/*.log
 db/*.sqlite3
 tmp/**/*
