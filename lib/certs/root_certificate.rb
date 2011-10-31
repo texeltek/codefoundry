@@ -87,7 +87,7 @@ module CodeFoundryCertificates
     end
   
     def signing_profile
-      @signing_profile ||= {“extensions” => {“keyUsage” => {“usage” => [“critical”, “keyCertSign”] }} } 
+      @signing_profile ||= { "extensions" => { "keyUsage" => { "usage" => ["critical", "keyCertSign" ] } } }
     end
   
     def dn

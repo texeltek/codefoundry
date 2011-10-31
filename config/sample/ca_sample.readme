@@ -1,0 +1,3 @@
+Run 'rake certs:sample_ca' to generate 
+an x509 certificate and keypair for a 
+sample Certificate Authority (CA).

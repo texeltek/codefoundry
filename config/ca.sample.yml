@@ -4,48 +4,32 @@
 # config/ca.yml is listed in CodeFoundry's .gitignore
 
 ca:
-  name: texeltekcf-ca                         # name of the cert CA
-  common_name: texeltekcf-ca                  # the IP or DNS name of the server that CodeFoundry is running on
-  organization: "TexelTek, Inc."              # name of the CA's organization
-  organizational_unit: texeltekcf             # sub-unit of the CA's organizations
-  locality: "Annapolis Junction"              # city or area name
+  name: codefoundry_ca                        # name of the cert CA
+  common_name: codefoundry_ca                 # the IP or DNS name of the server that CodeFoundry is running on
+  organization: CodeFoundry                   # name of the CA's organization
+  organizational_unit: CodeFoundry            # sub-unit of the CA's organizations
+  locality: ""                                # city or area name
   state: Maryland                             # state's name or its two-letter abbreviation (Maryland || MD)
   country: US                                 # two-letter country code (US)
-  email_address: texeltekcf-ca@texeltek.com   # not a required field in certificate_authority
+  email_address: codefoundry@codefoundry.com  # not a required field in certificate_authority
   signing_entity: true                        # MUST BE SET TO TRUE IN ORDER TO SIGN USER CERTS USING THIS CA
   serial_number: 1                            # CA certificate is the root certificate so its serial number is 1
-  public_key_file: /Users/acurry/work/ssl/texeltekcf-ca/texeltekcf-ca.pubkey.pem
-  private_key_file: /Users/acurry/work/ssl/texeltekcf-ca/texeltekcf-ca.key.pem
-  passphrase: "TexelTek_2011!"
-  dn: texeltek_dn
+  public_key_file: /etc/apache2/ssl/certs/ca_sample.cert.pem
+  private_key_file: /etc/apache2/ssl/private/ca_sample.key.pem
+  dn: codefoundry_dn
 
-texeltekcf-ca:
+codefoundry_ca:
   dir: /etc/apache2/ssl
   serial: /etc/apache2/ssl/ca/serial
   database: /etc/apache2/ssl/ca/index.txt
   new_certs_dir: /etc/apache2/ssl/certs
-  certificate: /etc/apache2/ssl/certs/texeltekcf-ca.cert.pem
-  private_key: /etc/apache2/ssl/private/texeltekcf-ca.key.pem
+  certificate: /etc/apache2/ssl/certs/ca_sample.cert.pem
+  private_key: /etc/apache2/ssl/private/ca_sample.key.pem
   default_days: 3650
   default_md: md5
   preserve: no
   email_in_dn: yes
-  nameopt: texeltekcf-ca
-  certopt: texeltekcf-ca
   policy: ca_policy_match
   
-texeltek_dn:
-  country: US
-  state: Maryland
-  organization: "TexelTek, Inc."
-  organizational_unit: texeltekcf
-  locality: Annapolis Junction
-
-v3_ca:
-  basicConstraints: CA:TRUE
-  subjectKeyIdentifier: hash
-  authorityKeyIdentifier: keyid:always,issuer:always
-
-v3_req:
-  basicConstraints: CA:FALSE
-  subjectKeyIdentifier: hash
+codefoundry_dn:
+  organization: CodeFoundry

@@ -3,6 +3,7 @@ public/projects
 config/database.yml
 config/settings.yml
 config/ca.yml
+config/sample/*.pem
 log/*.log
 db/*.sqlite3
 tmp/**/*
