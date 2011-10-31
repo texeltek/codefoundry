@@ -5,7 +5,7 @@
 
 ca:
   name: texeltekcf-ca                         # name of the cert CA
-  common_name: 192.168.20.33                  # the IP or DNS name of the server that CodeFoundry is running on
+  common_name: texeltekcf-ca                  # the IP or DNS name of the server that CodeFoundry is running on
   organization: "TexelTek, Inc."              # name of the CA's organization
   organizational_unit: texeltekcf             # sub-unit of the CA's organizations
   locality: "Annapolis Junction"              # city or area name
@@ -14,6 +14,10 @@ ca:
   email_address: texeltekcf-ca@texeltek.com   # not a required field in certificate_authority
   signing_entity: true                        # MUST BE SET TO TRUE IN ORDER TO SIGN USER CERTS USING THIS CA
   serial_number: 1                            # CA certificate is the root certificate so its serial number is 1
+  public_key_file: /Users/acurry/work/ssl/texeltekcf-ca/texeltekcf-ca.pubkey.pem
+  private_key_file: /Users/acurry/work/ssl/texeltekcf-ca/texeltekcf-ca.key.pem
+  passphrase: "TexelTek_2011!"
+  dn: texeltek_dn
 
 texeltekcf-ca:
   dir: /etc/apache2/ssl
@@ -29,44 +33,13 @@ texeltekcf-ca:
   nameopt: texeltekcf-ca
   certopt: texeltekcf-ca
   policy: ca_policy_match
-
-ca_policy_match:
-  countryName: match
-  stateOrProvinceName: supplied
-  organizationName: supplied
-  organizationalUnitName: optional
-  commonName: optional
-  emailAddress: optional
-  localityName: optional
-
-req:
-  default_bits: 1024         # Size of keys
-  default_keyfile: key.pem   # name of generated keys
-  default_md: md5            # message digest algorithm
-  string_mask: nombstr       # permitted characters
-  distinguished_name: req_distinguished_name
-  req_extensions: v3_req
-
-req_distinguished_name:
-  organizationName: "Organization Name (your company name, MUST BE SUPPLIED but does not have to match dev CA's organizationName, spaces and punctuation are OK)"
-  organizationalUnitName: "Organizational Unit Name (department division, OPTIONAL, spaces and punctuation are OK)"
-  emailAddress: "Email Address (OPTIONAL)"
-  emailAddress_max: 100
-  localityName: "Locality Name (city, district, spaces and punctuation are OK, OPTIONAL)"
-  stateOrProvinceName: "State or Province Name (full name, MUST BE SUPPLIED but does not have to match dev CA's stateOrProvinceName)"
-  countryName: "Country Name (2 letter code -- REQUIRED -- certificate countryName must match CA countryName)"
-  countryName_min: 2
-  countryName_max: 2
-  commonName: "Common Name (hostname, IP, or your name -- NOTE: if this is a server cert, it MUST match the IP of the host machine)"
-  commonName_max: 64
-
-distinguished_name_defaults:
-  organizationName_default: "TexelTek, Inc."
-  organizationalUnitName_Default: texeltekcf
-  localityName_default: "Annapolis Junction"
-  stateOrProvinceName_default: Maryland
-  countryName_default: US
-  emailAddress_default: your_texeltek_username@texeltek.com
+  
+texeltek_dn:
+  country: US
+  state: Maryland
+  organization: "TexelTek, Inc."
+  organizational_unit: texeltekcf
+  locality: Annapolis Junction
 
 v3_ca:
   basicConstraints: CA:TRUE
