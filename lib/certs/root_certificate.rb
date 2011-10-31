@@ -14,6 +14,8 @@ module CodeFoundryCertificates
   
     attr_accessor :passphrase
   
+    attr_accessor :signing_profile
+  
     attr_accessor :dn
   
     def initialize( filename = "#{Rails.root}/config/ca.yml" )
@@ -40,6 +42,7 @@ module CodeFoundryCertificates
       ca.subject.organizational_unit = yaml['organizational_unit']
       ca.serial_number.number        = yaml['serial_number']
       ca.signing_entity              = yaml['signing_entity'] || true
+
 
       key_material = CertificateAuthority::MemoryKeyMaterial.new
 
@@ -81,6 +84,10 @@ module CodeFoundryCertificates
       dn.organizational_unit  = yaml['organizational_unit']
       dn.locality             = yaml['locality']
       dn
+    end
+  
+    def signing_profile
+      @signing_profile ||= {“extensions” => {“keyUsage” => {“usage” => [“critical”, “keyCertSign”] }} } 
     end
   
     def dn
